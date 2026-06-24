@@ -82,8 +82,8 @@ def segmentation_agent(state: AgenticTumorState) -> AgenticTumorState:
         
         cam = gradcam.cam # 224x224 float matrix (0.0 to 1.0)
         
-        # Threshold the absolute core of the tumor (top 15% attention)
-        thresh = (cam > 0.85).astype(np.uint8) * 255
+        # Threshold the absolute core of the tumor (top 5% attention for tight size bounding)
+        thresh = (cam > 0.95).astype(np.uint8) * 255
         
         img_cv = cv2.imread(state["image_path"])
         img_cv = cv2.resize(img_cv, (224, 224))
