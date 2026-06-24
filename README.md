@@ -1,6 +1,6 @@
 # 🧠 Agentic AI Tumor Classification System
 
-An advanced, multi-agent AI medical assistant for the autonomous detection, diagnosis, and treatment recommendation of brain tumors. Built with **LangGraph**, **PyTorch**, and **Llama 3**, this system provides explainable clinical insights with real-time RAG (Retrieval-Augmented Generation) medical guideline retrieval.
+An advanced, multi-agent AI medical assistant for the autonomous detection, diagnosis, and treatment recommendation of brain tumors. Built with **LangGraph** and **PyTorch**, this system provides explainable clinical insights with real-time offline medical guideline retrieval.
 
 ![Dashboard Preview](frontend/src/assets/hero.png)
 
@@ -9,7 +9,7 @@ An advanced, multi-agent AI medical assistant for the autonomous detection, diag
 - **Agentic Multi-Step Workflow**: Utilizes a LangGraph architecture to orchestrate multiple specialized AI agents (Image Agent, XAI Agent, Segmentation Agent, RAG Agent, Diagnosis Agent, and Treatment Agent).
 - **Accurate Classification**: Powered by a custom-trained **ResNet-18** CNN to detect Glioma, Meningioma, Pituitary tumors, and Healthy Brains.
 - **Explainable AI (XAI)**: Generates highly robust **Grad-CAM Attention Heatmaps** to visualize the precise focal point of the AI's diagnosis.
-- **Autonomous RAG Assistant**: Retrieves offline clinical guidelines (NCCN/WHO) via **ChromaDB** and queries a local **Llama 3** engine (via Ollama) to dynamically recommend treatments tailored to the tumor type and patient age/gender.
+- **Autonomous RAG Agent**: Retrieves offline clinical guidelines (NCCN/WHO) via **ChromaDB** to dynamically recommend offline treatments tailored to the tumor type.
 - **Smart Routing**: Bypasses intensive XAI, RAG, and Treatment models if a healthy "No Tumor" scan is detected, outputting a completely clean clinical report and "Low" risk level.
 - **Clinical Reporting**: Autonomously compiles the diagnostic workflow into a downloadable PDF Radiology Report for the attending physician.
 
@@ -18,9 +18,8 @@ An advanced, multi-agent AI medical assistant for the autonomous detection, diag
 - **Frontend**: React, Vite, Lucide Icons, Axios
 - **Backend API**: FastAPI, Uvicorn, Python
 - **AI / Deep Learning**: PyTorch, Torchvision, OpenCV
-- **Agentic AI**: LangGraph, LangChain
+- **Agentic AI**: LangGraph
 - **Vector Database**: ChromaDB (Medical Guidelines)
-- **Local LLM Engine**: Ollama (Llama 3)
 
 ## ⚙️ Local Setup Instructions
 
@@ -48,22 +47,13 @@ npm install
 npm run dev
 ```
 
-### 3. Local Llama 3 Engine (Critical for Chat Assistant)
-
-The clinical chat and autonomous treatment generator require a local LLM to preserve patient data privacy.
-1. Install [Ollama](https://ollama.com/)
-2. Run the following command in your terminal to download and start the model:
-```bash
-ollama run llama3
-```
-
 ## 🏥 Clinical Workflow
 
 1. **Upload MRI**: Provide a T1-weighted contrast MRI and optional clinical notes.
 2. **Analysis**: The LangGraph state machine passes the image to the Vision model.
-3. **XAI Extraction**: If a tumor is detected, the XAI agent extracts the top 15% attention map.
-4. **Treatment**: The RAG agent fetches treatment guidelines, and Llama 3 generates personalized next steps.
-5. **Review & Chat**: The doctor can review the PDF report or ask the Chat Assistant for reasoning.
+3. **XAI Extraction**: If a tumor is detected, the XAI agent extracts the top 5% attention map.
+4. **Treatment**: The RAG agent fetches offline treatment guidelines and assigns clinical pathways.
+5. **Review**: The doctor can review the dashboard UI and export a PDF report.
 
 ---
 *Disclaimer: This is a research project and should not be used as a sole diagnostic tool in real clinical environments without human supervision.*
