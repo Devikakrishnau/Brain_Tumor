@@ -203,12 +203,18 @@ async def clinical_chat(request: ChatRequest):
         ctx = request.patient_context or {}
         tumor = ctx.get('prediction') or 'the tumor'
         
-        fallback = (
-            f"I am currently operating in offline mode (Llama3 engine unreachable). "
-            f"However, regarding the {tumor}, standard NCCN/WHO guidelines generally suggest "
-            f"maximal safe resection followed by histopathological analysis. "
-            f"Please ensure `ollama run llama3` is active in your terminal for full dynamic reasoning."
-        )
+        if "404" in str(e) or "not found" in str(e).lower():
+            fallback = (
+                f"Llama 3 is currently downloading in your terminal (this can take a few minutes for 4.7GB). "
+                f"While we wait, standard NCCN/WHO guidelines generally suggest routine clinical management for {tumor}."
+            )
+        else:
+            fallback = (
+                f"I am currently operating in offline mode (Llama 3 engine unreachable). "
+                f"However, regarding {tumor}, standard NCCN/WHO guidelines generally suggest "
+                f"maximal safe resection followed by histopathological analysis. "
+                f"Please ensure `ollama run llama3` is active in your terminal."
+            )
         return {"reply": fallback}
 
 @app.get("/cases/similar")
