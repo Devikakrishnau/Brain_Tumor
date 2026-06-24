@@ -201,7 +201,7 @@ async def clinical_chat(request: ChatRequest):
     except Exception as e:
         print(f"LLM Error: {e}")
         ctx = request.patient_context or {}
-        tumor = ctx.get('prediction', 'the tumor')
+        tumor = ctx.get('prediction') or 'the tumor'
         
         fallback = (
             f"I am currently operating in offline mode (Llama3 engine unreachable). "
