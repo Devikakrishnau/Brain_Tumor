@@ -57,7 +57,7 @@ export default function Dashboard() {
         analysis: {
           prediction: result.prediction,
           confidence: result.resnet_confidence || 0,
-          risk_level: result.resnet_confidence > 0.8 ? "High" : "Medium",
+          risk_level: result.prediction?.toLowerCase().includes('notumor') ? "0" : (result.resnet_confidence > 0.8 ? "High" : "Medium"),
           tumor_size_cm: result.tumor_size_cm || 0
         },
         img_url: result.gradcam_image
@@ -168,10 +168,10 @@ export default function Dashboard() {
                 <h4 style={{color: 'var(--text-secondary)'}}>Size & Volume</h4>
                 <div style={{fontSize: '1.5rem', fontWeight: 'bold'}}>{result.tumor_size_cm} cm</div>
               </div>
-              <div style={{background: 'rgba(239, 68, 68, 0.1)', padding: '16px', borderRadius: '8px', border: '1px solid #ef4444'}}>
+              <div style={{background: result.prediction?.toLowerCase().includes('notumor') ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)', padding: '16px', borderRadius: '8px', border: `1px solid ${result.prediction?.toLowerCase().includes('notumor') ? '#10b981' : '#ef4444'}`}}>
                 <h4 style={{color: 'var(--text-secondary)'}}>Clinical Risk</h4>
-                <div style={{fontSize: '1.5rem', fontWeight: 'bold', color: result.resnet_confidence > 0.8 ? '#ef4444' : '#f59e0b'}}>
-                  {result.resnet_confidence > 0.8 ? "High" : "Medium"}
+                <div style={{fontSize: '1.5rem', fontWeight: 'bold', color: result.prediction?.toLowerCase().includes('notumor') ? '#10b981' : (result.resnet_confidence > 0.8 ? '#ef4444' : '#f59e0b')}}>
+                  {result.prediction?.toLowerCase().includes('notumor') ? "0" : (result.resnet_confidence > 0.8 ? "High" : "Medium")}
                 </div>
               </div>
             </div>

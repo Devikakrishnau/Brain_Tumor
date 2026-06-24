@@ -49,6 +49,15 @@ def image_agent(state: AgenticTumorState) -> AgenticTumorState:
             
         state["tumor_type"] = CLASSES[pred.item()].capitalize()
         state["resnet_confidence"] = conf.item()
+        
+        if state["tumor_type"] == "Notumor":
+            state["tumor_size_cm"] = 0.0
+            state["tumor_volume_cc"] = 0.0
+            state["probable_diagnosis"] = "Healthy Brain (No Tumor)"
+            state["treatment_recommendations"] = "Routine observation. Risk level 0."
+            state["rag_context"] = "N/A"
+            state["gradcam_path"] = None
+            state["segmentation_mask_path"] = None
     except Exception as e:
         print(f"Error in image_agent: {e}")
         state["tumor_type"] = "Error"

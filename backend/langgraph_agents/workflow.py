@@ -10,6 +10,11 @@ from backend.langgraph_agents.nodes import (
     report_agent
 )
 
+def check_tumor(state: AgenticTumorState):
+    if state.get("tumor_type") == "Notumor":
+        return "no_tumor"
+    return "has_tumor"
+
 def build_graph():
     # 1. Initialize Graph
     workflow = StateGraph(AgenticTumorState)
@@ -26,7 +31,15 @@ def build_graph():
     # 3. Define Edges (Sequential for now, can be parallelized)
     workflow.set_entry_point("image_agent")
     
-    workflow.add_edge("image_agent", "xai_agent")
+    workflow.add_conditional_edges(
+        "image_agent",
+        check_tumor,
+        {
+            "has_tumor": "xai_agent",
+            "no_tumor": "report_agent"
+        }
+    )
+    
     workflow.add_edge("xai_agent", "segmentation_agent")
     workflow.add_edge("segmentation_agent", "rag_medical_agent")
     workflow.add_edge("rag_medical_agent", "diagnosis_agent")
