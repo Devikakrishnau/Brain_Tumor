@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Upload, Brain, Activity, FileText } from 'lucide-react';
-import ChatAssistant from './ChatAssistant';
 import SegmentationViewer from './SegmentationViewer';
 
 const API_URL = 'http://localhost:8000';
@@ -194,19 +193,6 @@ export default function Dashboard() {
             </div>
           </div>
         )}
-      </div>
-
-      {/* Right Column: Chat Assistant */}
-      <div className="glass-panel chat-container">
-            <ChatAssistant 
-              patientContext={{
-                prediction: result?.prediction,
-                tumor_size: result?.tumor_size_cm,
-                age: patientAge,
-                gender: patientGender,
-                notes: clinicalText
-              }} 
-            />
       </div>
     </div>
   );

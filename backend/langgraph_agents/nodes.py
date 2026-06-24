@@ -200,26 +200,17 @@ from langchain_core.messages import SystemMessage, HumanMessage
 
 def treatment_agent(state: AgenticTumorState) -> AgenticTumorState:
     print("[Agent] Treatment Agent suggesting treatments...")
-    try:
-        llm = ChatOllama(model="llama3", temperature=0.1)
-        prompt = f"Patient has {state.get('tumor_type')} of size {state.get('tumor_size_cm')}cm. Guidelines: {state.get('rag_context')}. Provide 2 brief, specific treatment steps. Do not use markdown formatting."
-        messages = [
-            SystemMessage(content="You are an expert clinical oncologist."),
-            HumanMessage(content=prompt)
-        ]
-        res = llm.invoke(messages)
-        state["treatment_recommendations"] = res.content
-    except Exception as e:
-        print(f"Error in treatment_agent LLM: {e}")
-        t_type = state.get('tumor_type', '').lower()
-        if 'meningioma' in t_type:
-            state["treatment_recommendations"] = "1. Surgical resection (Craniotomy). 2. Radiation therapy if atypical or incomplete."
-        elif 'glioma' in t_type:
-            state["treatment_recommendations"] = "1. Maximal safe resection. 2. Adjuvant Chemoradiation (Temozolomide)."
-        elif 'pituitary' in t_type:
-            state["treatment_recommendations"] = "1. Transsphenoidal adenomectomy. 2. Hormone replacement therapy."
-        else:
-            state["treatment_recommendations"] = "1. Complete radiological assessment. 2. Biopsy and surgical planning."
+    t_type = state.get('tumor_type', '').lower()
+    
+    if 'meningioma' in t_type:
+        state["treatment_recommendations"] = "1. Surgical resection (Craniotomy). 2. Radiation therapy if atypical or incomplete."
+    elif 'glioma' in t_type:
+        state["treatment_recommendations"] = "1. Maximal safe resection. 2. Adjuvant Chemoradiation (Temozolomide)."
+    elif 'pituitary' in t_type:
+        state["treatment_recommendations"] = "1. Transsphenoidal adenomectomy. 2. Hormone replacement therapy."
+    else:
+        state["treatment_recommendations"] = "1. Complete radiological assessment. 2. Biopsy and surgical planning."
+        
     return state
 
 def report_agent(state: AgenticTumorState) -> AgenticTumorState:
