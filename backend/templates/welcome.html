@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agentic Tumor AI</title>
+
+  <style>
+    :root{
+      --overlay: rgba(0,0,0,0.62);
+      --glass: rgba(255,255,255,0.08);
+      --border: rgba(255,255,255,0.16);
+      --text: #e9f5ff;
+      --muted: rgba(233,245,255,0.75);
+      --accent: #63e6ff;
+    }
+
+    *{ box-sizing: border-box; margin:0; padding:0; font-family: system-ui, Segoe UI, Roboto, Arial; }
+
+    body{
+      min-height: 100vh;
+      color: var(--text);
+      overflow:hidden;
+      position: relative;
+      background: url("/static/brain.png") center/cover no-repeat fixed; /* changed */
+    }
+
+    body::before{
+      content:"";
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(var(--overlay), var(--overlay));
+      pointer-events: none;
+    }
+
+    .wrap{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card{
+      width:min(900px, 96vw);
+      padding: 34px 28px;
+      border: 1px solid var(--border);
+      background: var(--glass);
+      backdrop-filter: blur(10px);
+      border-radius: 22px;
+      box-shadow: 0 18px 80px rgba(0,0,0,0.55);
+      position: relative;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.25);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .dot{
+      width:10px; height:10px; border-radius:50%;
+      background: var(--accent);
+      box-shadow: 0 0 20px rgba(99,230,255,0.8);
+      animation: pulse 1.4s infinite ease-in-out;
+    }
+
+    @keyframes pulse{
+      0%,100%{ transform: scale(1); opacity: 0.8; }
+      50%{ transform: scale(1.4); opacity: 1; }
+    }
+
+    h1{
+      margin-top: 18px;
+      font-size: clamp(34px, 4.5vw, 58px);
+      line-height: 1.05;
+      letter-spacing: -1px;
+      text-shadow: 0 10px 40px rgba(0,0,0,0.55);
+    }
+
+    /* FIXED typing */
+    .type{
+      display:inline-block;
+      border-right: 3px solid rgba(99,230,255,0.9);
+      white-space: nowrap;
+      overflow: hidden;
+      width: 0;
+      animation:
+        typing 2.1s steps(24,end) forwards,
+        caret .75s step-end infinite,
+        hideCursor .1s linear 2.2s forwards;
+    }
+
+    @keyframes typing{ from{width:0} to{width:100%} }
+    @keyframes caret{ 50%{border-color: rgba(99,230,255,0.9)} }
+    @keyframes hideCursor{ to{border-right:none;} }
+
+    .sub{
+      margin-top: 14px;
+      max-width: 62ch;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.65;
+    }
+
+    .actions{
+      margin-top: 22px;
+      display:flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items:center;
+    }
+
+    button{
+      cursor:pointer;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.35);
+      color: var(--text);
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-weight: 700;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease;
+    }
+    button:hover{
+      transform: translateY(-1px);
+      background: rgba(0,0,0,0.5);
+      border-color: rgba(99,230,255,0.45);
+    }
+
+    .primary{
+      background: rgba(99,230,255,0.14);
+      border-color: rgba(99,230,255,0.45);
+    }
+
+    .hint{
+      margin-top: 12px;
+      color: rgba(233,245,255,0.62);
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="badge">
+        <span class="dot"></span>
+        Multi-Agent • Multi-Modal • Explainable AI
+      </div>
+
+      <h1><span class="type">Agentic Tumor AI</span></h1>
+
+      <p class="sub">
+        Upload an MRI scan, run agentic analysis, and get prediction + Grad-CAM heatmap + report + reasoning trace.
+      </p>
+
+      <div class="actions">
+        <button class="primary" id="startBtn">Open Dashboard</button>
+      </div>
+
+      <p class="hint" id="hint">Auto-opening dashboard in <span id="count">5</span>s…</p>
+    </div>
+  </div>
+
+  <script>
+    const DASHBOARD_URL = "http://127.0.0.1:7860";
+
+    let seconds = 25;
+    const countEl = document.getElementById("count");
+
+    const openDash = () => window.location.href = DASHBOARD_URL;
+
+    const timer = setInterval(() => {
+      seconds--;
+      countEl.textContent = seconds;
+      if (seconds <= 0) {
+        clearInterval(timer);
+        openDash();
+      }
+    }, 1000);
+
+    document.getElementById("startBtn").addEventListener("click", () => {
+      clearInterval(timer);
+      openDash();
+    });
+  </script>
+</body>
+</html>

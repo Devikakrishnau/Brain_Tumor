@@ -1,0 +1,22 @@
+torch
+torchvision
+fastapi
+uvicorn
+gradio
+opencv-python
+pillow
+numpy
+
+# --- New Dependencies for Multi-Agent & RAG ---
+langgraph
+langchain
+langchain-core
+langchain-community
+langchain-openai
+langchain-ollama
+chromadb
+sentence-transformers
+pymongo
+psycopg2-binary
+pydantic
+python-multipart

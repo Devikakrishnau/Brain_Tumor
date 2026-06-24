@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+.env
+
+# Node
+node_modules/
+dist/
+build/
+.next/
+
+# IDEs
+.vscode/
+.idea/
+.DS_Store
+
+# Data & Models
+*.pth
+*.pt
+*.onnx
+*.h5
+*.sqlite3
+chroma_db/
