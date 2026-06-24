@@ -63,29 +63,28 @@ def segmentation_agent(state: AgenticTumorState) -> AgenticTumorState:
         static_dir.mkdir(parents=True, exist_ok=True)
         mask_save_path = static_dir / "unet_mask.png"
 
+        # We use the raw CAM matrix to get the exact AI attention core
+        # This completely bypasses flaky OpenCV thresholding on varying MRI contrasts
+        image = Image.open(state["image_path"]).convert("RGB")
+        img_t = transform(image).unsqueeze(0).to(device)
+        
+        gradcam = GradCAMAgent(model, model.layer4[-1])
+        gradcam.generate(img_t, state["image_path"])
+        
+        cam = gradcam.cam # 224x224 float matrix (0.0 to 1.0)
+        
+        # Threshold the absolute core of the tumor (top 15% attention)
+        thresh = (cam > 0.85).astype(np.uint8) * 255
+        
         img_cv = cv2.imread(state["image_path"])
         img_cv = cv2.resize(img_cv, (224, 224))
-        gray = cv2.cvtColor(img_cv, cv2.COLOR_BGR2GRAY)
         
-        # 1. Advanced Computer Vision Tumor Extraction
-        # Tumors are typically the brightest dense mass in T1c MRIs.
-        # We threshold the image to grab the brightest pixels (Tumor + Skull)
-        _, thresh = cv2.threshold(gray, 160, 255, cv2.THRESH_BINARY)
+        # Morphological operations to clean up the mask
+        kernel = np.ones((5,5), np.uint8)
+        thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
+        thresh = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
         
-        # 2. Morphological Opening (Erosion followed by Dilation)
-        # The skull is a thin line, while the tumor is a thick solid mass.
-        # A large kernel erosion will completely erase the thin skull but leave the core of the tumor.
-        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9, 9))
-        eroded = cv2.erode(thresh, kernel, iterations=1)
-        
-        # Dilation restores the tumor to its original size
-        dilated = cv2.dilate(eroded, kernel, iterations=1)
-        
-        # Additional slight blur to smooth the edges of the tumor mask
-        dilated = cv2.GaussianBlur(dilated, (5, 5), 0)
-        _, final_mask = cv2.threshold(dilated, 127, 255, cv2.THRESH_BINARY)
-        
-        contours, _ = cv2.findContours(final_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         colored_mask = np.zeros((224, 224, 3), dtype=np.uint8)
         simulated_size = 4.5
