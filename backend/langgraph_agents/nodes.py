@@ -88,12 +88,26 @@ def segmentation_agent(state: AgenticTumorState) -> AgenticTumorState:
         img_cv = cv2.imread(state["image_path"])
         img_cv = cv2.resize(img_cv, (224, 224))
         
+        # Create a brain mask to delete out-of-skull GradCAM corner artifacts
+        gray = cv2.cvtColor(img_cv, cv2.COLOR_BGR2GRAY)
+        _, brain_mask = cv2.threshold(gray, 15, 255, cv2.THRESH_BINARY)
+        
+        # Threshold the absolute core of the tumor (top 5% attention for tight size bounding)
+        thresh = (cam > 0.95).astype(np.uint8) * 255
+        thresh = cv2.bitwise_and(thresh, thresh, mask=brain_mask)
+        
         # Morphological operations to clean up the mask
         kernel = np.ones((5,5), np.uint8)
-        thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
         thresh = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
         
         contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        
+        if not contours:
+            # Fallback to 0.85 if 0.95 erased the tumor
+            thresh = (cam > 0.85).astype(np.uint8) * 255
+            thresh = cv2.bitwise_and(thresh, thresh, mask=brain_mask)
+            thresh = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
+            contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         colored_mask = np.zeros((224, 224, 3), dtype=np.uint8)
         simulated_size = 4.5
