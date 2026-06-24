@@ -54,7 +54,7 @@ def image_agent(state: AgenticTumorState) -> AgenticTumorState:
             state["tumor_size_cm"] = 0.0
             state["tumor_volume_cc"] = 0.0
             state["probable_diagnosis"] = "Healthy Brain (No Tumor)"
-            state["treatment_recommendations"] = "Routine observation. Risk level 0."
+            state["treatment_recommendations"] = "Routine observation. Low risk."
             state["rag_context"] = "N/A"
             state["gradcam_path"] = None
             state["segmentation_mask_path"] = None
